@@ -20,6 +20,7 @@ from premailer.premailer import (
     transform,
     Premailer,
     merge_styles,
+    csstext_to_pairs,
     ExternalNotFoundError,
 )
 from premailer.__main__ import main
@@ -99,15 +100,15 @@ class Tests(unittest.TestCase):
         pass
 
     def test_merge_styles_basic(self):
-        old = 'font-size:1px; color: red'
+        inline_style = 'font-size:1px; color: red'
         new = 'font-size:2px; font-weight: bold'
-        expect = 'color:red;', 'font-size:2px;', 'font-weight:bold'
-        result = merge_styles(old, new)
+        expect = 'color:red;', 'font-size:1px;', 'font-weight:bold'
+        result = merge_styles(inline_style, [csstext_to_pairs(new)],[''])
         for each in expect:
             ok_(each in result)
 
     def test_merge_styles_with_class(self):
-        old = 'color:red; font-size:1px;'
+        inline_style = 'color:red; font-size:1px;'
         new, class_ = 'font-size:2px; font-weight: bold', ':hover'
 
         # because we're dealing with dicts (random order) we have to
@@ -115,7 +116,7 @@ class Tests(unittest.TestCase):
         # We expect something like this:
         #  {color:red; font-size:1px} :hover{font-size:2px; font-weight:bold}
 
-        result = merge_styles(old, new, class_)
+        result = merge_styles(inline_style, [csstext_to_pairs(new)], [class_])
         ok_(result.startswith('{'))
         ok_(result.endswith('}'))
         ok_(' :hover{' in result)
@@ -129,14 +130,14 @@ class Tests(unittest.TestCase):
             ok_(each in split_regex.findall(result)[1])
 
     def test_merge_styles_non_trivial(self):
-        old = 'background-image:url("data:image/png;base64,iVBORw0KGg")'
+        inline_style = 'background-image:url("data:image/png;base64,iVBORw0KGg")'
         new = 'font-size:2px; font-weight: bold'
         expect = (
             'background-image:url("data:image/png;base64,iVBORw0KGg")',
             'font-size:2px;',
             'font-weight:bold'
         )
-        result = merge_styles(old, new)
+        result = merge_styles(inline_style, [csstext_to_pairs(new)],[''])
         for each in expect:
             ok_(each in result)
 
@@ -330,7 +331,7 @@ class Tests(unittest.TestCase):
         <style type="text/css">p::first-letter {float:left}</style>
         </head>
         <body>
-        <h1 style="border:1px solid black; font-weight:bolder">Peter</h1>
+        <h1 style="border:1px solid black;font-weight:bolder">Peter</h1>
         <p style="color:red">Hej</p>
         </body>
         </html>"""
@@ -537,7 +538,7 @@ class Tests(unittest.TestCase):
         <head>
         <title>Title</title>
         </head>
-        <body style="background:url(http://example.com/bg.png); color:#123; font-family:Omerta">
+        <body style="background:url(http://example.com/bg.png);color:#123;font-family:Omerta">
         <h1>Hi!</h1>
         </body>
         </html>'''
@@ -607,20 +608,21 @@ class Tests(unittest.TestCase):
 
         p = Premailer(html, exclude_pseudoclasses=False)
         result_html = p.transform()
-
+        print(result_html)
         # because we're dealing with random dicts here we can't predict what
         # order the style attribute will be written in so we'll look for
         # things manually.
-        e = '<p style="::first-letter{float:left; font-size:300%}">'\
+        e = '<p style="::first-letter{float:left;font-size:300%}">'\
             'Paragraph</p>'
         self.fragment_in_html(e, result_html, True)
 
-        e = 'style="{border:1px solid green; color:red}'
+        e = 'style="{border:1px solid green;color:red}'
         self.fragment_in_html(e, result_html)
         e = ' :visited{border:1px solid green}'
         self.fragment_in_html(e, result_html)
-        e = ' :hover{border:1px solid green; text-decoration:none}'
+        e = ' :hover{border:1px solid green;text-decoration:none}'
         self.fragment_in_html(e, result_html)
+        
 
     def test_css_with_pseudoclasses_excluded(self):
         "Skip things like `a:hover{}` and keep them in the style block"
@@ -649,7 +651,7 @@ class Tests(unittest.TestCase):
         </style>
         </head>
         <body>
-        <a href="#" style="border:1px solid green; color:red">Page</a>
+        <a href="#" style="border:1px solid green;color:red">Page</a>
         <p>Paragraph</p>
         </body>
         </html>'''
@@ -697,8 +699,8 @@ class Tests(unittest.TestCase):
         <p style="text-align:center" align="center">Text</p>
         <table style="width:200px" width="200">
           <tr>
-            <td style="background-color:red; vertical-align:middle" bgcolor="red" valign="middle">Cell 1</td>
-            <td style="background-color:red; vertical-align:middle" bgcolor="red" valign="middle">Cell 2</td>
+            <td style="background-color:red;vertical-align:middle" bgcolor="red" valign="middle">Cell 1</td>
+            <td style="background-color:red;vertical-align:middle" bgcolor="red" valign="middle">Cell 2</td>
           </tr>
         </table>
         </body>
@@ -741,7 +743,7 @@ class Tests(unittest.TestCase):
         </head>
         <body>
         <p style="text-align:center">Text</p>
-        <table style="height:300px; width:200px">
+        <table style="height:300px;width:200px">
           <tr>
             <td style="background-color:red" bgcolor="red">Cell 1</td>
             <td style="background-color:red" bgcolor="red">Cell 2</td>
@@ -828,7 +830,7 @@ class Tests(unittest.TestCase):
         <head>
         </head>
         <body>
-        <p style="height:100%; width:100%" height="100%" width="100%">Paragraph</p>
+        <p style="height:100%;width:100%" height="100%" width="100%">Paragraph</p>
         </body>
         </html>"""
 
@@ -1176,7 +1178,7 @@ class Tests(unittest.TestCase):
         <head>
         </head>
         <body>
-        <div id="identified" style="color:blue; font-size:22px"></div>
+        <div id="identified" style="color:blue;font-size:22px"></div>
         </body>
         </html>"""
 
@@ -1576,20 +1578,20 @@ class Tests(unittest.TestCase):
 
             def run(self):
                 """Calls merge_styles in a loop and sets exc attribute if merge_styles raises an exception."""
-                for i in range(0, REPEATS):
+                for _ in range(0, REPEATS):
                     try:
                         merge_styles(self.old, self.new, self.class_)
                     except Exception as e:
                         logging.exception("Exception in thread %s", self.name)
                         self.exc = e
 
-        old = 'background-color:#ffffff;'
+        inline_style = 'background-color:#ffffff;'
         new = 'background-color:#dddddd;'
         class_ = ''
 
         # start multiple threads concurrently; each calls merge_styles many times
         threads = [
-            RepeatMergeStylesThread(old, new, class_)
+            RepeatMergeStylesThread(inline_style, [csstext_to_pairs(new)], [class_])
             for i in range(0, THREADS)
         ]
         for t in threads:
@@ -1992,7 +1994,7 @@ class Tests(unittest.TestCase):
         </head>
         <body>
         <h1 style="fo:bar">Hi!</h1>
-        <p><strong style="color:baz; text-decoration:none">Yes!</strong></p>
+        <p><strong style="color:baz;text-decoration:none">Yes!</strong></p>
         </body>
         </html>"""
 
