@@ -608,7 +608,6 @@ class Tests(unittest.TestCase):
 
         p = Premailer(html, exclude_pseudoclasses=False)
         result_html = p.transform()
-        print(result_html)
         # because we're dealing with random dicts here we can't predict what
         # order the style attribute will be written in so we'll look for
         # things manually.
