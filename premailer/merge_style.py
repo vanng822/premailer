@@ -5,10 +5,11 @@ import re
 
 __all__ = ['csstext_to_pairs', 'merge_styles']
     
-"""
-    csstext_to_pairs takes css text and make it to list of tuple of key,value
-"""
+
 def csstext_to_pairs(csstext):
+    """
+        csstext_to_pairs takes css text and make it to list of tuple of key,value
+    """
     # The lock is required to avoid ``cssutils`` concurrency issues documented in issue #65
     with csstext_to_pairs._lock:
         parsed = cssutils.css.CSSVariablesDeclaration(csstext)
@@ -18,20 +19,20 @@ csstext_to_pairs._lock = threading.RLock()
 
 grouping_regex = re.compile('([:\-\w]*){([^}]+)}')
 
-"""
-    This will merge all new styles where the order is important
-    The last one will override the first
-    When that is done it will apply old inline style again
-    
-    Args:
-        inline_style(str): the old inline style of the element if there is one
-        new_styles: a list of new styles, each element should be a list of tuple
-        classes: a list of classes which maps new_styles, important! 
-        
-    Returns:
-        str: the final style
-"""
 def merge_styles(inline_style, new_styles, classes):    
+    """
+        This will merge all new styles where the order is important
+        The last one will override the first
+        When that is done it will apply old inline style again
+        
+        Args:
+            inline_style(str): the old inline style of the element if there is one
+            new_styles: a list of new styles, each element should be a list of tuple
+            classes: a list of classes which maps new_styles, important! 
+            
+        Returns:
+            str: the final style
+    """
     # building classes
     styles = {pc: {} for pc in set(classes)}
     # probably faster just override
