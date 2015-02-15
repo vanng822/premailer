@@ -33,6 +33,7 @@ import cssutils
 from lxml import etree
 from lxml.cssselect import CSSSelector
 from premailer.merge_style import merge_styles, csstext_to_pairs
+from premailer.cache import function_cache
 
 __all__ = ['PremailerError', 'Premailer', 'transform']
 
@@ -72,7 +73,6 @@ _importants = re.compile('\s*!important')
 # These selectors don't apply to all elements. Rather, they specify
 # which elements to apply to.
 FILTER_PSEUDOSELECTORS = [':last-child', ':first-child', 'nth-child']
-
 
 class Premailer(object):
 
@@ -114,7 +114,11 @@ class Premailer(object):
             disable_basic_attributes = []
         self.disable_basic_attributes = disable_basic_attributes
         self.disable_validation = disable_validation
-
+        
+    @function_cache()
+    def _parseCssString(self, css_body, validate=True):
+        return cssutils.parseString(css_body, validate=validate)
+    
     def _parse_style_rules(self, css_body, ruleset_index):
         """ Returns a list of rules to apply to this doc and a list of rules that won't be used
             because e.g. they are pseudoclasses. Rules look like: (specificity, selector, bulk)
@@ -136,7 +140,7 @@ class Premailer(object):
         # empty string
         if not css_body:
             return rules, leftover
-        sheet = cssutils.parseString(css_body, validate=not self.disable_validation)
+        sheet = self._parseCssString(css_body, validate=not self.disable_validation)
         for rule in sheet:
             # handle media rule
             if rule.type == rule.MEDIA_RULE:
@@ -486,7 +490,7 @@ class Premailer(object):
             else:
                 style.text = self._css_rules_to_string(these_leftover)
             head.append(style)
-            
+    
 def transform(html, base_url=None):
     return Premailer(html, base_url=base_url).transform()
 
