@@ -5,7 +5,6 @@ except ImportError:  # pragma: no cover
     # some old python 2.6 thing then, eh?
     from ordereddict import OrderedDict
 import sys
-import threading
 if sys.version_info >= (3,):  # pragma: no cover
     # As in, Python 3
     from io import StringIO
