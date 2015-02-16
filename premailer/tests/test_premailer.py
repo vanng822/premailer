@@ -331,7 +331,7 @@ class Tests(unittest.TestCase):
         <style type="text/css">p::first-letter {float:left}</style>
         </head>
         <body>
-        <h1 style="border:1px solid black;font-weight:bolder">Peter</h1>
+        <h1 style="border:1px solid black; font-weight:bolder">Peter</h1>
         <p style="color:red">Hej</p>
         </body>
         </html>"""
@@ -538,7 +538,7 @@ class Tests(unittest.TestCase):
         <head>
         <title>Title</title>
         </head>
-        <body style="background:url(http://example.com/bg.png);color:#123;font-family:Omerta">
+        <body style="background:url(http://example.com/bg.png); color:#123; font-family:Omerta">
         <h1>Hi!</h1>
         </body>
         </html>'''
@@ -611,15 +611,15 @@ class Tests(unittest.TestCase):
         # because we're dealing with random dicts here we can't predict what
         # order the style attribute will be written in so we'll look for
         # things manually.
-        e = '<p style="::first-letter{float:left;font-size:300%}">'\
+        e = '<p style="::first-letter{float:left; font-size:300%}">'\
             'Paragraph</p>'
         self.fragment_in_html(e, result_html, True)
 
-        e = 'style="{border:1px solid green;color:red}'
+        e = 'style="{border:1px solid green; color:red}'
         self.fragment_in_html(e, result_html)
         e = ' :visited{border:1px solid green}'
         self.fragment_in_html(e, result_html)
-        e = ' :hover{border:1px solid green;text-decoration:none}'
+        e = ' :hover{border:1px solid green; text-decoration:none}'
         self.fragment_in_html(e, result_html)
         
 
@@ -650,7 +650,7 @@ class Tests(unittest.TestCase):
         </style>
         </head>
         <body>
-        <a href="#" style="border:1px solid green;color:red">Page</a>
+        <a href="#" style="border:1px solid green; color:red">Page</a>
         <p>Paragraph</p>
         </body>
         </html>'''
@@ -698,8 +698,8 @@ class Tests(unittest.TestCase):
         <p style="text-align:center" align="center">Text</p>
         <table style="width:200px" width="200">
           <tr>
-            <td style="background-color:red;vertical-align:middle" bgcolor="red" valign="middle">Cell 1</td>
-            <td style="background-color:red;vertical-align:middle" bgcolor="red" valign="middle">Cell 2</td>
+            <td style="background-color:red; vertical-align:middle" bgcolor="red" valign="middle">Cell 1</td>
+            <td style="background-color:red; vertical-align:middle" bgcolor="red" valign="middle">Cell 2</td>
           </tr>
         </table>
         </body>
@@ -742,7 +742,7 @@ class Tests(unittest.TestCase):
         </head>
         <body>
         <p style="text-align:center">Text</p>
-        <table style="height:300px;width:200px">
+        <table style="height:300px; width:200px">
           <tr>
             <td style="background-color:red" bgcolor="red">Cell 1</td>
             <td style="background-color:red" bgcolor="red">Cell 2</td>
@@ -829,7 +829,7 @@ class Tests(unittest.TestCase):
         <head>
         </head>
         <body>
-        <p style="height:100%;width:100%" height="100%" width="100%">Paragraph</p>
+        <p style="height:100%; width:100%" height="100%" width="100%">Paragraph</p>
         </body>
         </html>"""
 
@@ -1177,7 +1177,7 @@ class Tests(unittest.TestCase):
         <head>
         </head>
         <body>
-        <div id="identified" style="color:blue;font-size:22px"></div>
+        <div id="identified" style="color:blue; font-size:22px"></div>
         </body>
         </html>"""
 
@@ -1591,7 +1591,7 @@ class Tests(unittest.TestCase):
         # start multiple threads concurrently; each calls merge_styles many times
         threads = [
             RepeatMergeStylesThread(inline_style, [csstext_to_pairs(new)], [class_])
-            for i in range(0, THREADS)
+            for _ in range(0, THREADS)
         ]
         for t in threads:
             t.start()
@@ -1993,7 +1993,7 @@ class Tests(unittest.TestCase):
         </head>
         <body>
         <h1 style="fo:bar">Hi!</h1>
-        <p><strong style="color:baz;text-decoration:none">Yes!</strong></p>
+        <p><strong style="color:baz; text-decoration:none">Yes!</strong></p>
         </body>
         </html>"""
 

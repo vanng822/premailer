@@ -37,7 +37,6 @@ def merge_styles(inline_style, new_styles, classes):
     styles = {pc: {} for pc in set(classes)}
     # probably faster just override
     styles[''] = {}
-    #print(new_styles)
     for i, style in enumerate(new_styles):
         for k, v in style:
             styles[classes[i]][k] = v
@@ -60,9 +59,9 @@ def merge_styles(inline_style, new_styles, classes):
         if not kv:
             continue
         if pseudoclass:
-            pseudo_styles.append('%s{%s}' % (pseudoclass ,';'.join('%s:%s' % (k, v) for k, v in sorted(kv.items()))))
+            pseudo_styles.append('%s{%s}' % (pseudoclass ,'; '.join('%s:%s' % (k, v) for k, v in sorted(kv.items()))))
         else:
-            normal_styles.append(';'.join('%s:%s' % (k, v) for k, v in sorted(kv.items())))
+            normal_styles.append('; '.join('%s:%s' % (k, v) for k, v in sorted(kv.items())))
     
     if pseudo_styles:
         all_styles = (['{%s}' % ''.join(normal_styles)] + pseudo_styles) if normal_styles else pseudo_styles
