@@ -3,8 +3,6 @@ import cssutils
 import threading
 import re
 
-__all__ = ['csstext_to_pairs', 'merge_styles']
-    
 
 def csstext_to_pairs(csstext):
     """
