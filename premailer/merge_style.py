@@ -41,8 +41,6 @@ def merge_styles(inline_style, new_styles, classes):
             
     # keep always the old inline style
     if inline_style:
-        # finding pseudoclasses
-        # we propably don't want to do this
         # inline should be a declaration list as I understand
         # ie property-name:property-value;...
         for k, v in csstext_to_pairs(inline_style):
