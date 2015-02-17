@@ -371,9 +371,9 @@ class Premailer(object):
                 parent = item.getparent()
                 del parent.attrib['class']
 
-        # #
-        # # URLs
-        # #
+        ##
+        ## URLs
+        ##
         if self.base_url:
             for attr in ('href', 'src'):
                 for item in page.xpath("//@%s" % attr):
