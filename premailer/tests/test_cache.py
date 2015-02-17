@@ -2,12 +2,12 @@ from __future__ import absolute_import, unicode_literals
 import unittest
 
 from premailer.cache import function_cache
-
+from nose.tools import assert_raises
 
 class TestCache(unittest.TestCase):
 
     def test_expected_max_entries_raise(self):
-        with self.assertRaises(TypeError):
+        with assert_raises(TypeError):
             function_cache(expected_max_entries='testing')
         
     def test_auto_turn_off(self):
