@@ -41,7 +41,6 @@ class TestCache(unittest.TestCase):
         # call 10 more times
         for _ in range(10):
             wrapper(1, 3, t=1)
-        
-        self.assertEqual(test['call_count'], 3)
+            self.assertEqual(test['call_count'], 3)
         
         
