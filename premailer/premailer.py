@@ -70,6 +70,9 @@ def _cache_parse_css_string(css_body, validate=True):
     """
         This function will cache the result from cssutils
         It is a big gain when number of rules is big
+        Maximum cache entries are 1000. This is mainly for
+        protecting memory leak in case something gone wild.
+        Be aware that you can turn the cache off in Premailer 
 
         Args:
             css_body(str): css rules in string format
